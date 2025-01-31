@@ -2,6 +2,8 @@
 const bookGrid = document.querySelector('.book-grid')
 const tableHeadings = ['Author: ', 'Pages: ', 'Read: ']
 const addBookCard = document.querySelector('#add-book-card')
+const inputModal = document.querySelector('.input-modal')
+initModal()
 const myLibrary = []
 
 function Book(name, author, pages, hasBeenRead){
@@ -27,8 +29,8 @@ function handleDeleteClick (event) {
   bookGrid.removeChild(event.target.offsetParent)
 }
 
-function handleAddClick (event) {
-  displayModal()
+function handleAddClick () {
+  inputModal.showModal()
 }
 
 function createBookItemCard (book, emptyCard) {
@@ -90,35 +92,35 @@ function createCardButtonContainer () {
   return buttonContainer
 }
 
-function displayModal () {
-  const inputModal = document.querySelector('.input-modal')
+function initModal () {
   const inputs = Array.from(inputModal.querySelectorAll('input'))
-  clearModalInputs(inputs)
+  // CANCEL BUTTON
   const cancelButton = document.querySelector('#cancel-button')
   cancelButton.addEventListener('click', () => {
-    inputModal.style.display = 'none'
+    const inputs = Array.from(inputModal.querySelectorAll('input'))
+    clearModalInputs(inputs)
+    inputModal.close()
   })
+  // SUBMIT BUTTON
   const submitButton = document.querySelector('#submit-button')
-
   submitButton.addEventListener('click', (evt) => {
+    evt.preventDefault()
     const inputValues = [...inputs.values()].map(
       (input) => input.value || input.checked)
     const [bookName, bookAuthor, pages, readAlready] = [...inputValues]
-    console.log(inputs)
     const areInputsValid = inputs.reduce((acc, current) => {
       console.log(current)
-      console.log(validateInput(current))
       return acc && validateInput(current)
     }, true)
   })
-  inputModal.style.display = 'flex'
-  inputs[0].focus()
+  inputModal.close()
 }
 
 function validateInput (input) {
   let message = ''
   if (input.type === 'text') {
     if (input.value.length < 1) {
+      message = 'This field cannot be empty'
     } else if (input.value.length > 30) {
       message = 'Maximum allowed length is 30 characters long'
     }
@@ -131,7 +133,6 @@ function validateInput (input) {
     } else if (trimmedStr.length > 4) {
       message = 'Maximum length is 4 numbers long'
     }
-
   }
 
   if (message) {
@@ -142,7 +143,9 @@ function validateInput (input) {
 }
 
 function displayError (message, element) {
-
+  const inputErrorPopup = document.createElement('span');
+  inputErrorPopup.textContent = message
+  element.appendChild(inputErrorPopup)
 }
 
 function clearModalInputs (inputs) {
@@ -156,8 +159,6 @@ function clearModalInputs (inputs) {
 }
 
 
-
-
 const newBook = new Book('Zbabělci', 'Josef Škvorecký', 549, false)
 const newBook2 = new Book('Hello', 'Some Guy', 500, false)
 myLibrary.push(newBook, newBook2)
@@ -169,6 +170,5 @@ for (let book of myLibrary) {
 }
 
 addBookCard.addEventListener('click', handleAddClick)
-
 
 
