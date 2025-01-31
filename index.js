@@ -18,6 +18,7 @@ function Book(name, author, pages, hasBeenRead){
   }
 }
 
+// BUTTON LISTENERS
 function handleEditClick (event) {
 
 }
@@ -27,16 +28,7 @@ function handleDeleteClick (event) {
 }
 
 function handleAddClick (event) {
-  const addBookContainer = event.target.parentElement
-  const {offsetWidth, offsetHeight} = document.querySelector('.main-container')
-  console.log(offsetWidth, offsetHeight)
-  const finalCardHeight = +document.documentElement.offsetWidth / 4
-  const finalCardHPos = (0.5 * offsetWidth - addBookContainer.offsetLeft) - addBookContainer.offsetWidth / 2
-  const finalCardVPos = (0.5 * offsetHeight - addBookContainer.offsetTop) - finalCardHeight / 2
-  document.documentElement.style.setProperty('--main-container-final-height', `${finalCardHeight}px`)
-  document.documentElement.style.setProperty('--main-container-horizontal', `${finalCardHPos}px`)
-  document.documentElement.style.setProperty('--main-container-vertical', `${finalCardVPos}px`)
-  addBookContainer.style.animationName = 'shift'
+  displayModal()
 }
 
 function createBookItemCard (book, emptyCard) {
@@ -86,15 +78,85 @@ function createCardButtonContainer () {
   editButton.id = 'book-edit-btn'
   editButton.type = 'button'
   editButton.textContent = 'EDIT'
+  editButton.classList.add('action-button')
   editButton.addEventListener('click', handleEditClick)
   const deleteButton = document.createElement('button')
   deleteButton.id = 'book-delete-btn'
   deleteButton.type = 'button'
   deleteButton.textContent = 'DELETE'
   deleteButton.addEventListener('click', handleDeleteClick)
+  deleteButton.classList.add('action-button')
   buttonContainer.append(editButton, deleteButton)
   return buttonContainer
 }
+
+function displayModal () {
+  const inputModal = document.querySelector('.input-modal')
+  const inputs = Array.from(inputModal.querySelectorAll('input'))
+  clearModalInputs(inputs)
+  const cancelButton = document.querySelector('#cancel-button')
+  cancelButton.addEventListener('click', () => {
+    inputModal.style.display = 'none'
+  })
+  const submitButton = document.querySelector('#submit-button')
+
+  submitButton.addEventListener('click', (evt) => {
+    const inputValues = [...inputs.values()].map(
+      (input) => input.value || input.checked)
+    const [bookName, bookAuthor, pages, readAlready] = [...inputValues]
+    console.log(inputs)
+    const areInputsValid = inputs.reduce((acc, current) => {
+      console.log(current)
+      console.log(validateInput(current))
+      return acc && validateInput(current)
+    }, true)
+  })
+  inputModal.style.display = 'flex'
+  inputs[0].focus()
+}
+
+function validateInput (input) {
+  let message = ''
+  if (input.type === 'text') {
+    if (input.value.length < 1) {
+    } else if (input.value.length > 30) {
+      message = 'Maximum allowed length is 30 characters long'
+    }
+  } else if (input.type === 'number') {
+    let trimmedStr = input.value.replace(/^0+/, '') // Remove leading 0's
+    if (trimmedStr.match(/\D/g)) {
+      message = 'Only positive digits allowed'
+    } else if (trimmedStr.length < 1) {
+      message = 'This field cannot be empty or contain other characters than digits'
+    } else if (trimmedStr.length > 4) {
+      message = 'Maximum length is 4 numbers long'
+    }
+
+  }
+
+  if (message) {
+    displayError(message, input)
+    return false
+  }
+  return true
+}
+
+function displayError (message, element) {
+
+}
+
+function clearModalInputs (inputs) {
+  inputs.forEach(input => {
+    input.value = ''
+    if (input.type === 'checkbox') {
+      input.checked = false
+    }
+    console.log(input)
+  })
+}
+
+
+
 
 const newBook = new Book('Zbabělci', 'Josef Škvorecký', 549, false)
 const newBook2 = new Book('Hello', 'Some Guy', 500, false)

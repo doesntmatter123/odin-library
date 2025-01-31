@@ -10,10 +10,28 @@
     <link href="style.css" rel="stylesheet">
 </head>
 <body>
-
+<div class="input-modal">
+    <h3>Add a new book</h3>
+    <hr>
+    <label for="book_name_input">Name:</label>
+    <input type="text" name="book_name" id="book_name_input" required="required">
+    <label for="book_author_input">Author:</label>
+    <input type="text" name="book_author" id="book_author_input" required="required">
+    <label for="book_pages_input">Number of pages:</label>
+    <input type="number" name="book_pages" id="book_pages_input" required="required">
+    <div class="read-checkbox-container">
+        <label for="book_read_input">Have you read it?</label>
+        <input type="checkbox" name="book_read" id="book_read_input">
+    </div>
+    <div class="modal-button-container">
+        <button class="action-button" id="submit-button">SUBMIT</button>
+        <button class="action-button" id="cancel-button">CANCEL</button>
+    </div>
+</div>
 <span>LIBRARY</span>
 <div class="main-container">
-    <span>YOUR BOOKS:</span>
+
+<span>YOUR BOOKS:</span>
     <hr>
     <div class="book-grid">
         <div class="book-item-card" id="add-book-card">
