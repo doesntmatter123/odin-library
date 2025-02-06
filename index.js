@@ -109,7 +109,6 @@ function initModal () {
       (input) => input.value || input.checked)
     const [bookName, bookAuthor, pages, readAlready] = [...inputValues]
     const areInputsValid = inputs.reduce((acc, current) => {
-      console.log(current)
       return acc && validateInput(current)
     }, true)
   })
@@ -144,8 +143,11 @@ function validateInput (input) {
 
 function displayError (message, element) {
   const inputErrorPopup = document.createElement('span');
+  inputErrorPopup.classList.add('input-error-popup')
   inputErrorPopup.textContent = message
+  console.log(message, inputErrorPopup)
   element.appendChild(inputErrorPopup)
+  console.log(element)
 }
 
 function clearModalInputs (inputs) {
@@ -154,7 +156,6 @@ function clearModalInputs (inputs) {
     if (input.type === 'checkbox') {
       input.checked = false
     }
-    console.log(input)
   })
 }
 
