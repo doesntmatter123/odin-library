@@ -13,12 +13,16 @@
 <dialog class="input-modal" open>
     <h3>Add a new book</h3>
     <hr>
-    <label for="book_name_input">Name:</label>
-    <input type="text" name="book_name" id="book_name_input" required="required">
-    <label for="book_author_input">Author:</label>
-    <input type="text" name="book_author" id="book_author_input" required="required">
-    <label for="book_pages_input">Number of pages:</label>
-    <input min="1" max="9999" type="number" name="book_pages" id="book_pages_input" required="required">
+    <div class="input-wrapper">
+        <label for="book_name_input">Name:</label>
+        <input type="text" name="book_name" id="book_name_input" required="required">
+    </div>
+    <div class="input-wrapper">
+        <label for="book_author_input">Author:</label>
+        <input type="text" name="book_author" id="book_author_input" required="required"></div>
+    <div class="input-wrapper">
+        <label for="book_pages_input">Number of pages:</label>
+        <input min="1" max="9999" type="number" name="book_pages" id="book_pages_input" required="required"></div>
     <div class="read-checkbox-container">
         <label for="book_read_input">Have you read it?</label>
         <input type="checkbox" name="book_read" id="book_read_input">

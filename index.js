@@ -11,9 +11,6 @@ function Book(name, author, pages, hasBeenRead){
   this.author = author
   this.pages = pages
   this.hasBeenRead = hasBeenRead
-  this.info = function () {
-    return `Book name: ${name}, Author: ${author}, Pages: ${pages}, Has it been read: ${hasBeenRead}`
-  }
 
   this.properties = function (){
     return [this.name, this.author, this.pages, this.hasBeenRead]
@@ -99,19 +96,29 @@ function initModal () {
   cancelButton.addEventListener('click', () => {
     const inputs = Array.from(inputModal.querySelectorAll('input'))
     clearModalInputs(inputs)
+    clearErrorPopups()
     inputModal.close()
   })
   // SUBMIT BUTTON
   const submitButton = document.querySelector('#submit-button')
   submitButton.addEventListener('click', (evt) => {
     evt.preventDefault()
+    clearErrorPopups()
     const inputValues = [...inputs.values()].map(
-      (input) => input.value || input.checked)
+      (input) => {return input.type === 'checkbox' ? input.checked : input.value})
     const [bookName, bookAuthor, pages, readAlready] = [...inputValues]
     const areInputsValid = inputs.reduce((acc, current) => {
       return acc && validateInput(current)
     }, true)
+    if(areInputsValid){
+
+      const newBook = new Book(bookName, bookAuthor, pages, readAlready)
+      addBookToLibrary(newBook)
+      inputModal.close()
+    }
+
   })
+
   inputModal.close()
 }
 
@@ -145,9 +152,17 @@ function displayError (message, element) {
   const inputErrorPopup = document.createElement('span');
   inputErrorPopup.classList.add('input-error-popup')
   inputErrorPopup.textContent = message
-  console.log(message, inputErrorPopup)
-  element.appendChild(inputErrorPopup)
-  console.log(element)
+  element.before(inputErrorPopup)
+}
+
+function clearErrorPopups(){
+  const inputWrappers = document.querySelectorAll('.input-wrapper')
+  inputWrappers.forEach(wrapper => {
+    const popup = wrapper.querySelector('.input-error-popup')
+    if(popup){
+      wrapper.removeChild(popup)
+    }
+  })
 }
 
 function clearModalInputs (inputs) {
@@ -159,17 +174,21 @@ function clearModalInputs (inputs) {
   })
 }
 
+function renderCards(){
+  for (let book of myLibrary) {
+    addBookToLibrary(book)
+  }
+}
 
-const newBook = new Book('Zbabělci', 'Josef Škvorecký', 549, false)
-const newBook2 = new Book('Hello', 'Some Guy', 500, false)
-myLibrary.push(newBook, newBook2)
-
-for (let book of myLibrary) {
+function addBookToLibrary(book) {
+  myLibrary.push(book)
   const emptyCard = createEmptyCard()
   const filledCard = createBookItemCard(book, emptyCard)
   document.querySelector('#add-book-card').before(filledCard)
 }
 
+const newBook2 = new Book('Hello', 'Some Guy', 500, false)
+myLibrary.push(newBook2)
 addBookCard.addEventListener('click', handleAddClick)
-
+renderCards()
 
