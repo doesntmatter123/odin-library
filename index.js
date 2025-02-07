@@ -11,7 +11,6 @@ function Book(name, author, pages, hasBeenRead){
   this.author = author
   this.pages = pages
   this.hasBeenRead = hasBeenRead
-
   this.properties = function (){
     return [this.name, this.author, this.pages, this.hasBeenRead]
   }
@@ -19,10 +18,19 @@ function Book(name, author, pages, hasBeenRead){
 
 // BUTTON LISTENERS
 function handleEditClick (event) {
-
+  const elementIndex = Array.from(bookGrid.children).indexOf(event.target.offsetParent)
+  const book = myLibrary[elementIndex]
+  book.hasBeenRead = !book.hasBeenRead
+  const elementTable = event.target.offsetParent.querySelector('table')
+  elementTable.rows[2].cells[1].textContent = book.hasBeenRead ? '✅' : '❌'
+  event.target.textContent = `MARK AS ${book.hasBeenRead ? 'UNREAD' : 'READ'}`
+  console.log(myLibrary)
 }
 
 function handleDeleteClick (event) {
+  console.log(event.target.offsetParent)
+  const elementIndex = Array.from(bookGrid.children).indexOf(event.target.offsetParent)
+  myLibrary.splice(elementIndex, 1)
   bookGrid.removeChild(event.target.offsetParent)
 }
 
@@ -30,31 +38,30 @@ function handleAddClick () {
   inputModal.showModal()
 }
 
-function createBookItemCard (book, emptyCard) {
-  book.hasBeenRead = book.hasBeenRead ? '✅' : '❌'
-  const [bookName, ...properties] = book.properties()
-  const bookNameHeading = emptyCard.querySelector('h3')
-  bookNameHeading.textContent = bookName
-  const table = emptyCard.querySelector('table')
-  fillTable(table, properties)
-  emptyCard.append(table, createCardButtonContainer())
-  return emptyCard
-}
-
-function fillTable (table, properties) {
-  table.querySelectorAll('td').forEach((tableCell, i) => {
-    tableCell.textContent = properties[i]
-  })
-}
-
-function createEmptyCard () {
+function createBookItemCard (book) {
   const cardContainer = document.createElement('div')
   cardContainer.classList.add('book-item-card')
   const bookNameHeading = document.createElement('h3')
   const table = createTable(tableHeadings)
   cardContainer.append(bookNameHeading, table)
+  const buttonContainer = createCardButtonContainer(book.hasBeenRead)
+  const [bookName, ...properties] = book.properties()
+  bookNameHeading.textContent = bookName
+  fillTable(table, properties)
+  cardContainer.append(table, buttonContainer)
   return cardContainer
-  }
+}
+
+function fillTable (table, properties) {
+  table.querySelectorAll('td').forEach((tableCell, i) => {
+    if (typeof properties[i] === 'boolean') {
+      tableCell.textContent = properties[i] ? '✅' : '❌'
+    } else {
+      tableCell.textContent = properties[i]
+    }
+  })
+}
+
 
 function createTable (tableHeadings) {
   const table = document.createElement('table')
@@ -70,13 +77,13 @@ function createTable (tableHeadings) {
   return table
 }
 
-function createCardButtonContainer () {
+function createCardButtonContainer (bookRead) {
   const buttonContainer = document.createElement('div')
   buttonContainer.classList.add('book-item-buttons')
   const editButton = document.createElement('button')
   editButton.id = 'book-edit-btn'
   editButton.type = 'button'
-  editButton.textContent = 'EDIT'
+  editButton.textContent = `MARK AS ${bookRead ? 'UNREAD' : 'READ'}`
   editButton.classList.add('action-button')
   editButton.addEventListener('click', handleEditClick)
   const deleteButton = document.createElement('button')
@@ -111,10 +118,11 @@ function initModal () {
       return acc && validateInput(current)
     }, true)
     if(areInputsValid){
-
       const newBook = new Book(bookName, bookAuthor, pages, readAlready)
-      addBookToLibrary(newBook)
       inputModal.close()
+      myLibrary.push(newBook)
+      const filledCard = createBookItemCard(newBook)
+      document.querySelector('#add-book-card').before(filledCard)
     }
 
   })
@@ -150,7 +158,10 @@ function validateInput (input) {
 
 function displayError (message, element) {
   const inputErrorPopup = document.createElement('span');
+  const errorFieldPointer = document.createElement('div')
+  errorFieldPointer.classList.add('error-field-pointer')
   inputErrorPopup.classList.add('input-error-popup')
+  inputErrorPopup.appendChild(errorFieldPointer)
   inputErrorPopup.textContent = message
   element.before(inputErrorPopup)
 }
@@ -174,21 +185,17 @@ function clearModalInputs (inputs) {
   })
 }
 
-function renderCards(){
+function renderBooks () {
   for (let book of myLibrary) {
-    addBookToLibrary(book)
+    console.log(book)
+    const filledCard = createBookItemCard(book)
+    document.querySelector('#add-book-card').before(filledCard)
   }
 }
 
-function addBookToLibrary(book) {
-  myLibrary.push(book)
-  const emptyCard = createEmptyCard()
-  const filledCard = createBookItemCard(book, emptyCard)
-  document.querySelector('#add-book-card').before(filledCard)
-}
 
 const newBook2 = new Book('Hello', 'Some Guy', 500, false)
-myLibrary.push(newBook2)
 addBookCard.addEventListener('click', handleAddClick)
-renderCards()
+myLibrary.push(newBook2)
+renderBooks()
 
