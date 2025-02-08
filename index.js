@@ -101,8 +101,7 @@ function initModal () {
   // CANCEL BUTTON
   const cancelButton = document.querySelector('#cancel-button')
   cancelButton.addEventListener('click', () => {
-    const inputs = Array.from(inputModal.querySelectorAll('input'))
-    clearModalInputs(inputs)
+    clearModalInputs()
     clearErrorPopups()
     inputModal.close()
   })
@@ -123,6 +122,8 @@ function initModal () {
       myLibrary.push(newBook)
       const filledCard = createBookItemCard(newBook)
       document.querySelector('#add-book-card').before(filledCard)
+      clearModalInputs()
+      clearErrorPopups()
     }
 
   })
@@ -176,7 +177,8 @@ function clearErrorPopups(){
   })
 }
 
-function clearModalInputs (inputs) {
+function clearModalInputs () {
+  const inputs = Array.from(inputModal.querySelectorAll('input'))
   inputs.forEach(input => {
     input.value = ''
     if (input.type === 'checkbox') {
