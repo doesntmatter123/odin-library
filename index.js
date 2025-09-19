@@ -131,7 +131,7 @@ function initModal () {
   inputModal.close()
 }
 
-function validateInput (input) {
+function validateInput(input) {
   let message = ''
   if (input.type === 'text') {
     if (input.value.length < 1) {
